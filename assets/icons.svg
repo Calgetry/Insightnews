@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="dashboard" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z"/>
+  </symbol>
+  <symbol id="moon" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.74 2a9.99 9.99 0 1 0 9.26 13.37A8 8 0 0 1 12.74 2Z"/>
+  </symbol>
+  <symbol id="sun" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M6.76 4.84L5.34 3.42 3.92 4.84 5.34 6.26 6.76 4.84Zm10.5 0 1.42-1.42 1.42 1.42-1.42 1.42-1.42-1.42ZM12 4h0V1h0v3Zm0 19h0v-3h0v3Zm8-9h3v0h-3v0Zm-19 0H1v0h3v0Zm2.34 7.34L3.92 20.92l1.42-1.42 1.42 1.42-1.42 1.42Zm13.02 0 1.42 1.42 1.42-1.42-1.42-1.42-1.42 1.42ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/>
+  </symbol>
+  <symbol id="users" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13Zm8 0c-.29 0-.62.02-.97.05C16.37 13.56 18 14.43 18 16V20h6v-3.5c0-2.33-4.67-3.5-8-3.5Z"/>
+  </symbol>
+  <symbol id="activity" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M22 12h-4l-3 7-6-14-3 7H2"/>
+  </symbol>
+  <symbol id="search" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 1 0-.71.71l.27.28v.79L20 20.49 21.49 19 15.5 14Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/>
+  </symbol>
+</svg>
+
+

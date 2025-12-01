@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsightNews 管理系统 - 管理员登录</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <h1 class="brand">InsightNews 管理系统</h1>
+      <p class="subtitle">使用邮箱验证码或管理员账号登录</p>
+
+      <form id="loginForm" class="form">
+        <div class="form-item">
+          <label for="username">登录邮箱 / 管理员账号</label>
+          <input id="username" name="username" type="text" placeholder="请输入邮箱或管理员账号" required />
+        </div>
+        <div class="form-item">
+          <label for="password">邮箱验证码 / 管理员密码</label>
+          <input id="password" name="password" type="password" placeholder="请输入验证码或管理员密码" required />
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">登录</button>
+      </form>
+
+      <p class="tips">
+        <strong>真实接口：</strong> 输入邮箱 + 验证码即可登录；<br />
+        <strong>本地管理员：</strong> 账号 <code>admin</code> / 密码 <code>123456</code>
+      </p>
+      <div id="message" class="message" role="alert" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    const form = document.getElementById('loginForm');
+    const messageBox = document.getElementById('message');
+    const loginBtn = document.getElementById('loginBtn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // 检查是否已登录
+    if (Auth.isLoggedIn()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    function showMessage(text, type = 'info') {
+      messageBox.textContent = text;
+      messageBox.className = `message ${type}`;
+      messageBox.style.display = 'block';
+      
+      if (type !== 'info') {
+        setTimeout(() => {
+          messageBox.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    // 实时输入验证
+    usernameInput.addEventListener('blur', () => {
+      const username = usernameInput.value.trim();
+      if (!username) return;
+      if (username.includes('@')) {
+        if (!Utils.validateEmail(username)) {
+          usernameInput.style.borderColor = 'var(--danger)';
+          showMessage('请输入有效的邮箱地址', 'error');
+          return;
+        }
+      } else if (username.length < 3) {
+        usernameInput.style.borderColor = 'var(--danger)';
+        showMessage('管理员账号至少 3 个字符', 'error');
+        return;
+      }
+      usernameInput.style.borderColor = '';
+    });
+
+    passwordInput.addEventListener('blur', () => {
+      const password = passwordInput.value.trim();
+      if (!password) return;
+      if (usernameInput.value.includes('@')) {
+        if (password.length < 4) {
+          passwordInput.style.borderColor = 'var(--danger)';
+          showMessage('验证码通常为 4-6 位数字', 'error');
+          return;
+        }
+      } else if (password.length < 6) {
+        passwordInput.style.borderColor = 'var(--danger)';
+        showMessage('管理员密码至少 6 位', 'error');
+        return;
+      }
+      passwordInput.style.borderColor = '';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+      
+      if (!username) {
+        showMessage('请输入管理员账号', 'error');
+        usernameInput.focus();
+        return;
+      }
+      
+      if (!password) {
+        showMessage('请输入密码', 'error');
+        passwordInput.focus();
+        return;
+      }
+
+      loginBtn.disabled = true;
+      showMessage('登录中...', 'info');
+      
+      try {
+        const success = await Auth.login(username, password);
+        if (success) {
+          showMessage('登录成功，正在跳转...', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+        } else {
+          showMessage('登录失败：账号或密码错误', 'error');
+        }
+      } catch (err) {
+        showMessage(`登录失败：${err.message || '系统错误'}`, 'error');
+      } finally {
+        loginBtn.disabled = false;
+      }
+    });
+
+    // 回车键登录
+    form.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>仪表盘 - InsightNews 管理系统</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <!-- SVG 图标库 -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="dashboard" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z"/>
+    </symbol>
+    <symbol id="moon" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.74 2a9.99 9.99 0 1 0 9.26 13.37A8 8 0 0 1 12.74 2Z"/>
+    </symbol>
+    <symbol id="sun" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M6.76 4.84L5.34 3.42 3.92 4.84 5.34 6.26 6.76 4.84Zm10.5 0 1.42-1.42 1.42 1.42-1.42 1.42-1.42-1.42ZM12 4h0V1h0v3Zm0 19h0v-3h0v3Zm8-9h3v0h-3v0Zm-19 0H1v0h3v0Zm2.34 7.34L3.92 20.92l1.42-1.42 1.42 1.42-1.42 1.42Zm13.02 0 1.42 1.42 1.42-1.42-1.42-1.42-1.42 1.42ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/>
+    </symbol>
+    <symbol id="users" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13Zm8 0c-.29 0-.62.02-.97.05C16.37 13.56 18 14.43 18 16V20h6v-3.5c0-2.33-4.67-3.5-8-3.5Z"/>
+    </symbol>
+    <symbol id="activity" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M22 12h-4l-3 7-6-14-3 7H2"/>
+    </symbol>
+    <symbol id="search" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 1 0-.71.71l.27.28v.79L20 20.49 21.49 19 15.5 14Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/>
+    </symbol>
+    <symbol id="eye" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+    </symbol>
+    <symbol id="edit" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+    </symbol>
+    <symbol id="trash" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+    </symbol>
+    <symbol id="filter" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+    </symbol>
+    <symbol id="download" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+    </symbol>
+    <symbol id="plus" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </symbol>
+    <symbol id="topics" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14ZM7 7h10v2H7V7Zm0 4h7v2H7v-2Zm0 4h10v2H7v-2Z"/>
+    </symbol>
+    <symbol id="detection" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 3L2 12l3.5 3.5L12 9l6.5 6.5L22 12 12 3zm0 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+    </symbol>
+  </svg>
+
+  <header class="app-header">
+    <div class="brand">InsightNews 管理系统</div>
+    <nav class="nav">
+      <a href="dashboard.html" class="nav-link active"><svg class="icon"><use href="#dashboard"></use></svg> 仪表盘</a>
+      <a href="users.html" class="nav-link"><svg class="icon"><use href="#users"></use></svg> 用户管理</a>
+      <a href="visits-topics.html" class="nav-link"><svg class="icon"><use href="#activity"></use></svg> 访话管理</a>
+      <a href="detection.html" class="nav-link"><svg class="icon"><use href="#detection"></use></svg> 新闻检测</a>
+      <button id="themeToggle" class="btn btn-ghost" title="切换主题"><svg class="icon"><use href="#moon"></use></svg></button>
+      <button id="logoutBtn" class="btn btn-ghost">退出登录</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3 class="title">管理导航</h3>
+      <div class="snav">
+        <a href="dashboard.html" class="active"><svg class="icon"><use href="#dashboard"></use></svg> 仪表盘</a>
+        <a href="users.html"><svg class="icon"><use href="#users"></use></svg> 用户管理</a>
+        <a href="visits-topics.html"><svg class="icon"><use href="#activity"></use></svg> 访话管理</a>
+        <a href="detection.html"><svg class="icon"><use href="#detection"></use></svg> 新闻检测</a>
+      </div>
+    </aside>
+    
+    <main class="container">
+      <!-- 欢迎横幅 -->
+      <div class="welcome-banner">
+        <h1>欢迎回来，<span id="adminName">管理员</span>！</h1>
+        <p>今天是 <span id="currentDate"></span>，以下是系统概览信息</p>
+      </div>
+
+      <!-- KPI 指标 -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="label">活跃用户</div>
+          <div class="value" id="activeUsers">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">今日新增</div>
+          <div class="value" id="newUsers">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">话题总数</div>
+          <div class="value" id="topicCount">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">检测报告</div>
+          <div class="value" id="reportCount">-</div>
+        </div>
+      </section>
+
+      <!-- 图表区域 -->
+      <section class="charts-grid">
+        <div class="chart-card">
+          <h3>用户访问趋势</h3>
+          <div class="chart-container">
+            <canvas id="visitsChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>用户增长</h3>
+          <div class="chart-container">
+            <canvas id="usersChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 热门话题图表（单列全宽） -->
+      <section class="charts-grid charts-grid-single">
+        <div class="chart-card">
+          <h3>热门话题浏览</h3>
+          <div class="chart-container">
+            <canvas id="topicsChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 最近活动 -->
+      <section class="recent-activities">
+        <h3>最近用户活动</h3>
+        <div class="activity-list" id="activityList">
+          <!-- 活动内容由JavaScript动态生成 -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <script src="js/config.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    // 主题切换
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const newTheme = Theme.toggle();
+      const useId = newTheme === 'dark' ? 'sun' : 'moon';
+      document.querySelector('#themeToggle use').setAttribute('href', `#${useId}`);
+      if (window.Dashboard) {
+        Dashboard.refreshChartsForTheme();
+      }
+    });
+
+    // 退出登录
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      if (confirm('确定要退出登录吗？')) {
+        Auth.logout();
+        window.location.href = 'index.html';
+      }
+    });
+
+    // 显示当前用户信息
+    const currentUser = Auth.getCurrentUser();
+    const adminNameEl = document.getElementById('adminName');
+    const sidebarUserNameEl = document.getElementById('sidebarUserName');
+    if (currentUser) {
+      if (adminNameEl) {
+        adminNameEl.textContent = currentUser.name;
+      }
+      if (sidebarUserNameEl) {
+        sidebarUserNameEl.textContent = currentUser.name;
+      }
+    }
+
+    // 显示当前日期
+    const now = new Date();
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long'
+    });
+
+    // 初始化仪表盘
+    Dashboard.init();
+  </script>
+</body>
+</html>

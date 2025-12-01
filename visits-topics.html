@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>访问话题管理 - InsightNews 管理系统</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    .topic-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 20px;
+    }
+    
+    .content-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    
+    @media (max-width: 768px) {
+      .content-split {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SVG 图标库（与其它页面保持一致，�?<use> 复用�?-->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="dashboard" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z"/>
+    </symbol>
+    <symbol id="moon" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.74 2a9.99 9.99 0 1 0 9.26 13.37A8 8 0 0 1 12.74 2Z"/>
+    </symbol>
+    <symbol id="sun" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M6.76 4.84 5.34 3.42 3.92 4.84 5.34 6.26 6.76 4.84Zm10.5 0 1.42-1.42 1.42 1.42-1.42 1.42-1.42-1.42ZM12 4V1h0v3Zm0 19v-3h0v3Zm8-9h3v0h-3v0Zm-19 0H1v0h3v0Zm2.34 7.34L3.92 20.92l1.42-1.42 1.42 1.42-1.42 1.42Zm13.02 0 1.42 1.42 1.42-1.42-1.42-1.42-1.42 1.42ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/>
+    </symbol>
+    <symbol id="users" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13Zm8 0c-.29 0-.62.02-.97.05C16.37 13.56 18 14.43 18 16V20h6v-3.5c0-2.33-4.67-3.5-8-3.5Z"/>
+    </symbol>
+    <symbol id="activity" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M22 12h-4l-3 7-6-14-3 7H2"/>
+    </symbol>
+    <symbol id="search" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 1 0-.71.71l.27.28v.79L20 20.49 21.49 19 15.5 14Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/>
+    </symbol>
+    <symbol id="eye" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+    </symbol>
+    <symbol id="edit" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+    </symbol>
+    <symbol id="trash" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+    </symbol>
+    <symbol id="filter" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+    </symbol>
+    <symbol id="download" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+    </symbol>
+    <symbol id="plus" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </symbol>
+    <symbol id="topics" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14ZM7 7h10v2H7V7Zm0 4h7v2H7v-2Zm0 4h10v2H7v-2Z"/>
+    </symbol>
+    <symbol id="detection" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 3L2 12l3.5 3.5L12 9l6.5 6.5L22 12 12 3zm0 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+    </symbol>
+  </svg>
+  <header class="app-header">
+    <div class="brand">InsightNews 管理系统</div>
+    <nav class="nav">
+      <a href="dashboard.html" class="nav-link"><svg class="icon"><use href="#dashboard"></use></svg> 仪表盘</a>
+      <a href="users.html" class="nav-link"><svg class="icon"><use href="#users"></use></svg> 用户管理</a>
+      <a href="visits-topics.html" class="nav-link active"><svg class="icon"><use href="#activity"></use></svg> 访话管理</a>
+      <a href="detection.html" class="nav-link"><svg class="icon"><use href="#detection"></use></svg> 新闻检测</a>
+      <button id="themeToggle" class="btn btn-ghost" title="切换主题"><svg class="icon"><use href="#moon"></use></svg></button>
+      <button id="logoutBtn" class="btn btn-ghost">退出登录</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3 class="title">管理导航</h3>
+      <div class="snav">
+        <a href="dashboard.html"><svg class="icon"><use href="#dashboard"></use></svg> 仪表盘</a>
+        <a href="users.html"><svg class="icon"><use href="#users"></use></svg> 用户管理</a>
+        <a href="visits-topics.html" class="active"><svg class="icon"><use href="#activity"></use></svg> 访话管理</a>
+        <a href="detection.html"><svg class="icon"><use href="#detection"></use></svg> 新闻检测</a>
+      </div>
+    </aside>
+
+    <main class="container">
+      <div class="page-header">
+        <h1>访话管理</h1>
+        <div class="stats">
+          <span class="stat-item">话题总数: <strong id="topicCount">-</strong></span>
+          <span class="stat-item">新闻总数: <strong id="newsCount">-</strong></span>
+          <span class="stat-item">累计点赞: <strong id="totalLikes">-</strong></span>
+        </div>
+      </div>
+      <!-- 详情与趋势图（置顶，选择话题或新闻时显示�?-->
+      <section id="detailPanel" class="card" style="margin-top:16px;padding:16px;display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <h3 id="detailTitle" style="margin:0;font-size:1.125rem">标题</h3>
+            <div id="detailMeta" style="color:var(--muted);font-size:0.9rem;margin-top:6px">概览信息</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <label style="color:var(--muted);font-size:0.9rem;">视图</label>
+            <div class="trend-range-group">
+              <select id="trendRange" class="trend-select">
+                <option value="24">过去24小时（小时）</option>
+                <option value="168">过去7天（每6小时）</option>
+                <option value="30d">过去30天（按天）</option>
+              </select>
+              <span id="trendRangeSummary" class="trend-range-info">过去24小时（按小时）</span>
+            </div>
+            <div class="export-group">
+              <button id="resetZoomBtn" class="btn btn-sm btn-ghost" type="button" title="重置缩放">重置缩放</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;">
+          <div style="flex:1 1 480px;min-width:300px;">
+            <canvas id="viewsChart" height="220"></canvas>
+          </div>
+          <div style="flex:1 1 260px;min-width:220px;">
+            <canvas id="engagementChart" height="220"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar">
+            <div class="search-group">
+          <div class="search">
+            <span class="search-icon">🔎</span>
+            <input id="topicSearch" type="text" placeholder="搜索话题或新闻标题..." />
+          </div>
+          <button id="searchBtn" class="btn btn-primary">
+            <svg class="icon"><use href="#search"></use></svg>
+            搜索
+          </button>
+          <button id="resetBtn" class="btn btn-ghost">重置</button>
+        </div>
+        <div class="actions">
+          <button id="refreshBtn" class="btn">刷新</button>
+          <button id="createTopicBtn" class="btn btn-primary" title="添加新话题">
+            <svg class="icon"><use href="#plus"></use></svg>
+            添加话题
+          </button>
+          <button id="assignArticlesBtn" class="btn" title="把新闻放到话题里">
+            将新闻加入话题
+          </button>
+          <button id="bulkDeleteTopicsBtn" class="btn btn-danger" title="删除已选话题" disabled data-base-label="删除">
+            <svg class="icon"><use href="#trash"></use></svg>
+            <span class="btn-label">删除</span>
+            <span class="count-pill" hidden>0</span>
+          </button>
+          <div class="dropdown">
+            <button id="topicsExportBtn" class="btn">
+              <svg class="icon"><use href="#download"></use></svg>
+              导出话题
+              <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="dropdown-menu" id="topicsExportMenu" role="menu">
+              <a href="#" class="dropdown-item" data-format="csv">导出 CSV</a>
+              <a href="#" class="dropdown-item" data-format="excel">导出 Excel</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 概述统计面板 -->
+      <section class="topic-overview" aria-label="话题总览">
+        <div class="topic-overview-item">
+          <span>话题总数</span>
+          <strong id="topicCountOverview">-</strong>
+        </div>
+        <div class="topic-overview-item">
+          <span>关联新闻</span>
+          <strong id="newsCountOverview">-</strong>
+        </div>
+        <div class="topic-overview-item">
+          <span>累计点赞</span>
+          <strong id="totalLikesOverview">-</strong>
+        </div>
+      </section>
+
+      <div class="combined-content">
+        <div class="content-split">
+          <section class="card topics-board">
+            <div class="board-heading">
+              <div>
+                <h3>话题列表</h3>
+                <p>挑选一个话题快速浏览聚合报表</p>
+              </div>
+            </div>
+            <div id="topicsList" class="topic-list"></div>
+          </section>
+
+          <section class="card ranking-board">
+            <div class="board-heading">
+              <h3>新闻排行</h3>
+              <p>点击任意新闻以查看趋势详情与导出</p>
+            </div>
+            <div class="table-wrapper">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>排名</th>
+                      <th>标题</th>
+                      <th>浏览</th>
+                      <th>点赞</th>
+                      <th>评论</th>
+                      <th>得分</th>
+                    </tr>
+                  </thead>
+                  <tbody id="newsTbody">
+                    <tr><td colspan="6" class="text-center">请选择一个话题查看排行</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 话题详情 -->
+        <section class="topic-detail" aria-label="话题详情">
+            <div id="topicHeader" class="topic-detail-header empty-state">
+            <p>请选择左侧话题，查看关联新闻与用户互动详情。</p>
+          </div>
+          <div id="newsContainer" class="news-container empty-state">
+            <p>暂无数据</p>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+    <!-- 创建话题模态 -->
+    <div class="modal" id="createTopicModal" style="display:none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="createTopicTitle">添加话题</h3>
+          <button class="close" id="createTopicClose">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="createTopicForm" class="form">
+            <div class="form-grid">
+              <div class="form-item">
+                <label for="newTopicTitle">话题标题 *</label>
+                <input type="text" id="newTopicTitle" required placeholder="请输入话题标题">
+              </div>
+              <div class="form-item">
+                <label for="newTopicCategory">类别</label>
+                <input type="text" id="newTopicCategory" placeholder="例如：科技">
+              </div>
+              <div class="form-item full-width">
+                <label for="newTopicDescription">简介 / 描述 *</label>
+                <textarea id="newTopicDescription" rows="3" placeholder="简要描述话题..." required></textarea>
+              </div>
+              <div class="form-item full-width">
+                <label for="newTopicContent">内容详情 *</label>
+                <textarea id="newTopicContent" rows="4" placeholder="请输入完整内容或解析" required></textarea>
+              </div>
+              <div class="form-item full-width">
+                <label for="newTopicCover">封面地址 *</label>
+                <input type="text" id="newTopicCover" placeholder="https://example.com/cover.jpg" required>
+              </div>
+              <div class="form-item full-width">
+                <label for="newTopicTags">标签（逗号分隔）</label>
+                <input type="text" id="newTopicTags" placeholder="例如：AI, 新能源">
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" id="createTopicCancel">取消</button>
+              <button type="submit" class="btn btn-primary" id="createTopicSave">保存</button>
+            </div>
+          </form>
+          <div id="createTopicMessage" class="message" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 批量把新闻加入话题模态 -->
+    <div class="modal" id="assignArticlesModal" style="display:none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="assignArticlesTitle">将新闻加入话题</h3>
+          <button class="close" id="assignArticlesClose">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="assignArticlesForm" class="form">
+            <div class="form-grid">
+              <div class="form-item full-width">
+                <label for="assignTopicSelect">选择目标话题 *</label>
+                <select id="assignTopicSelect"></select>
+              </div>
+              <div class="form-item full-width">
+                <label for="assignArticleIds">新闻 ID 列表（逗号或换行分隔）</label>
+                <textarea id="assignArticleIds" rows="5" placeholder="例如：news-123, news-456"></textarea>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" id="assignArticlesCancel">取消</button>
+              <button type="submit" class="btn btn-primary" id="assignArticlesSave">加入话题</button>
+            </div>
+          </form>
+          <div id="assignArticlesMessage" class="message" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <!-- Chart.js for trend visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/visits.js"></script>
+  <script src="js/topics.js"></script>
+  <script>
+    // theme and logout handlers reused from other pages
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const newTheme = Theme.toggle();
+      const useId = newTheme === 'dark' ? 'sun' : 'moon';
+      document.querySelector('#themeToggle use')?.setAttribute('href', `#${useId}`);
+    });
+    document.getElementById('logoutBtn').addEventListener('click', () => { 
+      if (confirm('确定要退出登录吗？')) { 
+        Auth.logout(); 
+        window.location.href='index.html'; 
+      } 
+    });
+
+          // 初始化话题管理器
+          TopicsManager.init();
+      
+          // 初始化访问管理器：加载 mock 话题并渲染列表 + 排行
+          if (window.VisitManager && typeof VisitManager.loadTopics === 'function') {
+            try {
+              VisitManager.loadTopics(true).then(() => {
+                try {
+                  VisitManager.renderTopics();
+                  VisitManager.renderNewsTable();
+                  // 绑定趋势导出 & 话题/排行导出
+                  if (typeof VisitManager.bindDetailActions === 'function') VisitManager.bindDetailActions();
+                  if (typeof VisitManager.bindTopicsExportActions === 'function') VisitManager.bindTopicsExportActions();
+                } catch (e) { /* ignore */ }
+              }).catch(() => {
+                try {
+                  VisitManager.renderTopics();
+                  VisitManager.renderNewsTable();
+                  if (typeof VisitManager.bindDetailActions === 'function') VisitManager.bindDetailActions();
+                  if (typeof VisitManager.bindTopicsExportActions === 'function') VisitManager.bindTopicsExportActions();
+                } catch (e) { /* ignore */ }
+              });
+            } catch (e) {
+              // 同步调用兜底一次，至少渲染出 mock 列表
+              try {
+                VisitManager.renderTopics();
+                VisitManager.renderNewsTable();
+                if (typeof VisitManager.bindDetailActions === 'function') VisitManager.bindDetailActions();
+                if (typeof VisitManager.bindTopicsExportActions === 'function') VisitManager.bindTopicsExportActions();
+              } catch (e2) { /* ignore */ }
+            }
+          }
+      
+      // 创建一个整合管理器
+      const CombinedManager = {
+        init() {
+          this.bindEvents();
+          if (!this._topicsUpdatedHandler) {
+            this._topicsUpdatedHandler = (event) => this.handleTopicsUpdated(event);
+            document.addEventListener('visits:topics-updated', this._topicsUpdatedHandler);
+          }
+          // 延迟更新统计数据，确保数据已加载
+          setTimeout(() => {
+            this.updateStats();
+            this.updateOverviewStats();
+          }, 300);
+          this.setupBridge();
+        },
+        
+        bindEvents() {
+          // 绑定搜索事件
+          const search = document.getElementById('topicSearch');
+          const searchBtn = document.getElementById('searchBtn');
+          const refresh = document.getElementById('refreshBtn');
+          const resetBtn = document.getElementById('resetBtn');
+          
+          if(search) {
+            search.addEventListener('input', () => this.onSearch());
+            search.addEventListener('keypress', (e) => {
+              if(e.key === 'Enter') this.onSearch();
+            });
+          }
+          
+          if(searchBtn) searchBtn.addEventListener('click', () => this.onSearch());
+          
+          if(refresh) refresh.addEventListener('click', () => this.onRefresh());
+          
+          if(resetBtn) resetBtn.addEventListener('click', () => this.onReset());
+          
+          // 绑定添加话题按钮事件
+          const createTopicBtn = document.getElementById('createTopicBtn');
+          if(createTopicBtn) createTopicBtn.addEventListener('click', () => this.onCreateTopic());
+          
+          // 绑定将新闻添加到话题按钮事件
+          const assignArticlesBtn = document.getElementById('assignArticlesBtn');
+          if(assignArticlesBtn) assignArticlesBtn.addEventListener('click', () => this.onAssignArticles());
+          
+        },
+        
+        onSearch() {
+          const kw = document.getElementById('topicSearch')?.value.trim() || '';
+          if (window.TopicsManager && typeof TopicsManager.applyExternalFilters === 'function') {
+            TopicsManager.applyExternalFilters({ search: kw });
+          }
+          if (window.VisitManager && typeof VisitManager.renderTopics === 'function') {
+            VisitManager.renderTopics();
+          }
+          this.updateStats();
+          this.updateOverviewStats();
+        },
+        
+        onRefresh() {
+          // 刷新访问管理器的数据
+          if (window.VisitManager && typeof VisitManager.loadTopics === 'function') {
+            VisitManager.loadTopics(true);
+          }
+          // 刷新话题管理器的数据
+          if (window.TopicsManager && typeof TopicsManager.reloadData === 'function') {
+            TopicsManager.reloadData();
+          }
+          this.updateStats();
+          this.updateOverviewStats();
+          
+          // 刷新访问管理图表
+          this.updateVisitsStats();
+        },
+
+        updateVisitsStats() {
+          // 使用原本的VisitManager来处理访问管理图�?
+          if (window.VisitManager && window.VisitManager.topics && window.VisitManager.topics.length > 0) {
+            // 确保话题列表和新闻排行榜也被渲染
+            window.VisitManager.renderTopics();
+            window.VisitManager.renderNewsTable();
+          }
+        },
+        
+        onReset() {
+          const search = document.getElementById('topicSearch');
+          if (search) search.value = '';
+
+          if (window.TopicsManager && typeof TopicsManager.resetFilters === 'function') {
+            TopicsManager.resetFilters();
+          }
+
+          if (window.VisitManager && typeof VisitManager.renderTopics === 'function') {
+            VisitManager.renderTopics();
+          }
+
+          this.updateStats();
+          this.updateOverviewStats();
+        },
+        
+        updateStats(payload = {}) {
+          // 更新访问管理器的统计数据
+          if (window.VisitManager) {
+            VisitManager.updateStats();
+          }
+          
+          // 更新话题管理器的统计数据
+          const payloadTopics = Array.isArray(payload?.topics) ? payload.topics : null;
+          const topics = (payloadTopics && payloadTopics.length ? payloadTopics : null)
+            || (window.VisitManager ? VisitManager.topics : []);
+          const newsCount = topics.reduce((sum, topic) => sum + (Array.isArray(topic.news) ? topic.news.length : 0), 0);
+          const totalLikes = topics.reduce((sum, topic) => {
+            if (!topic || !Array.isArray(topic.news)) return sum;
+            const topicLikes = topic.news.reduce((acc, news) => acc + (Number(news.likes) || Number(news.stats?.likes) || 0), 0);
+            return sum + topicLikes;
+          }, 0);
+
+          const topicCountEl = document.getElementById('topicCount');
+          const newsCountEl = document.getElementById('newsCount');
+          const totalLikesEl = document.getElementById('totalLikes');
+
+          if (topicCountEl) topicCountEl.textContent = topics.length;
+          if (newsCountEl) newsCountEl.textContent = newsCount;
+          if (totalLikesEl) totalLikesEl.textContent = totalLikes;
+        },
+        
+        updateOverviewStats(payload = {}) {
+          // 更新顶部概述统计面板
+          const payloadTopics = Array.isArray(payload?.topics) ? payload.topics : null;
+          const managerTopics = window.TopicsManager ? (TopicsManager.state?.topics || []) : [];
+          const topics = (payloadTopics && payloadTopics.length ? payloadTopics : null)
+            || (managerTopics && managerTopics.length ? managerTopics : null)
+            || (window.VisitManager ? (VisitManager.topics || []) : []);
+
+          const useTopicHelpers = Boolean(window.TopicsManager);
+          const resolveNewsCount = (topic) => {
+            if (useTopicHelpers && typeof TopicsManager.getNewsCount === 'function') {
+              return TopicsManager.getNewsCount(topic);
+            }
+            if (Array.isArray(topic?.news)) return topic.news.length;
+            const fallbackKeys = ['newsCount', 'articleCount', 'articlesCount', 'totalNews', 'totalArticles'];
+            for (const key of fallbackKeys) {
+              const value = Number(topic?.[key]);
+              if (Number.isFinite(value) && value > 0) return value;
+            }
+            const statsValue = Number(topic?.stats?.newsCount || topic?.stats?.articles || topic?.stats?.articlesCount);
+            return Number.isFinite(statsValue) && statsValue > 0 ? statsValue : 0;
+          };
+
+          const resolveLikes = (topic) => {
+            if (useTopicHelpers && typeof TopicsManager.sumLikes === 'function') {
+              return TopicsManager.sumLikes(topic);
+            }
+            if (Array.isArray(topic?.news)) {
+              return topic.news.reduce((sum, news) => sum + (Number(news.likes) || Number(news.stats?.likes) || 0), 0);
+            }
+            const candidates = [topic?.stats?.likes, topic?.likes, topic?.likeCount, topic?.totalLikes];
+            for (const candidate of candidates) {
+              const value = Number(candidate);
+              if (Number.isFinite(value) && value > 0) return value;
+            }
+            return 0;
+          };
+
+          const totalTopics = topics.length;
+          const newsCount = topics.reduce((sum, topic) => sum + resolveNewsCount(topic), 0);
+          const totalLikes = topics.reduce((sum, topic) => sum + resolveLikes(topic), 0);
+
+          const topicCountOverview = document.getElementById('topicCountOverview');
+          const newsCountOverview = document.getElementById('newsCountOverview');
+          const totalLikesOverview = document.getElementById('totalLikesOverview');
+
+          if (topicCountOverview) topicCountOverview.textContent = totalTopics;
+          if (newsCountOverview) newsCountOverview.textContent = newsCount;
+          if (totalLikesOverview) totalLikesOverview.textContent = totalLikes;
+        },
+
+        handleTopicsUpdated(event) {
+          const detail = (event && event.detail) || {};
+          this.updateStats(detail);
+          this.updateOverviewStats(detail);
+        },
+        
+        // 设置两个管理器之间的桥接
+        setupBridge() {
+          // 使用轻量�?re-entrancy 锁避免在相互调用时造成无限循环
+          this._bridgeLock = false;
+
+          const safeCall = (fn) => {
+            return (...args) => {
+              if (this._bridgeLock) return;
+              try {
+                this._bridgeLock = true;
+                return fn.apply(null, args);
+              } finally {
+                this._bridgeLock = false;
+              }
+            };
+          };
+
+          // 仅在两个管理器都存在且需要桥接时进行桥接
+          if (window.VisitManager && window.TopicsManager) {
+            const syncVisitTopics = () => {
+              try {
+                const list = (TopicsManager.state && TopicsManager.state.filteredTopics && TopicsManager.state.filteredTopics.length)
+                  ? TopicsManager.state.filteredTopics
+                  : (TopicsManager.state && TopicsManager.state.topics) || [];
+                if (!Array.isArray(list) || !list.length) return;
+                const adapted = list.map(adaptTopicForVisits).filter(Boolean);
+                if (!adapted.length) return;
+                VisitManager.applyTopics(adapted);
+                VisitManager.renderTopics();
+                VisitManager.renderNewsTable();
+              } catch (err) {
+                console.debug('syncVisitTopics failed', err);
+              }
+            };
+            try { window.syncVisitTopicsForVisits = syncVisitTopics; } catch (err) {}
+
+            if (typeof TopicsManager.applyFilters === 'function') {
+              const originalApplyFilters = TopicsManager.applyFilters.bind(TopicsManager);
+              TopicsManager.applyFilters = () => {
+                originalApplyFilters();
+                syncVisitTopics();
+              };
+            }
+
+            // �?TopicsManager 选择话题时，调用原始实现并尝试同步到 VisitManager（使�?safeCall 避免递归�?
+            if (typeof TopicsManager.selectTopic === 'function') {
+              const originalSelectTopic = TopicsManager.selectTopic;
+              TopicsManager.selectTopic = (topicId) => {
+                originalSelectTopic.call(TopicsManager, topicId);
+                try {
+                  if (VisitManager && Array.isArray(VisitManager.topics)) {
+                    const matched = VisitManager.topics.find(t => String(t.id) === String(topicId));
+                    if (matched && Array.isArray(matched.news)) {
+                      safeCall((id) => VisitManager.selectTopic(id))(topicId);
+                    }
+                  } else {
+                    // 如果 VisitManager 没有该话题，则使�?TopicsManager 内置的桥接（它会尝试调用 VisitManager.showTopicDetail�?
+                    // TopicsManager.selectTopic 的原实现已负责调�?VisitManager.showTopicDetail
+                  }
+                } catch (e) {
+                  console.debug('bridge Topics->Visit failed', e);
+                }
+              };
+            }
+
+            // �?VisitManager 选择话题时，同步�?TopicsManager（也�?safeCall 来防止回环）
+            if (typeof VisitManager.selectTopic === 'function') {
+              const originalVisitSelect = VisitManager.selectTopic;
+              VisitManager.selectTopic = (topicId) => {
+                originalVisitSelect.call(VisitManager, topicId);
+                try {
+                  if (TopicsManager && Array.isArray(TopicsManager.state.filteredTopics) && TopicsManager.state.filteredTopics.some(t => String(t.id) === String(topicId))) {
+                    safeCall((id) => TopicsManager.selectTopic(id))(topicId);
+                  }
+                } catch (e) {
+                  console.debug('bridge Visit->Topics failed', e);
+                }
+              };
+            }
+
+            // 初始同步一次，确保排行面板立刻有数据
+            setTimeout(syncVisitTopics, 0);
+          }
+        }
+      };
+      window.CombinedManager = CombinedManager;
+      
+      // 添加新话题功能
+      CombinedManager.onCreateTopic = function() {
+        if (window.TopicsManager && typeof TopicsManager.showCreateTopicModal === 'function') {
+          TopicsManager.showCreateTopicModal();
+          return;
+        }
+
+        const topicName = prompt('请输入话题名称:');
+        if (!topicName || topicName.trim() === '') {
+          alert('话题名称不能为空');
+          return;
+        }
+
+        if (window.VisitManager) {
+          try {
+            VisitManager.addTopic({ name: topicName.trim() });
+            alert('话题创建成功！');
+          } catch (error) {
+            alert('创建话题失败: ' + error.message);
+          }
+        } else {
+          alert('VisitManager未初始化');
+        }
+      };
+      
+      // 将新闻添加到话题功能
+      CombinedManager.onAssignArticles = function() {
+        if (window.TopicsManager && typeof TopicsManager.showAssignArticlesModal === 'function') {
+          TopicsManager.showAssignArticlesModal();
+          return;
+        }
+
+        alert('当前版本已使用新版“将新闻加入话题”面板，请刷新页面后重试。');
+      };
+      
+      // 初始化整合管理器，稍作延迟以确保两个管理器都已完全初始化
+      setTimeout(() => {
+        CombinedManager.init();
+      }, 500);
+      
+      // 监听话题管理部分左侧话题选择（委托），并调用 TopicsManager 渲染详情
+      const topicsList = document.getElementById('topicsList');
+      if (topicsList) {
+        topicsList.addEventListener('click', (e) => {
+          if (e.target && (e.target.classList?.contains('topic-checkbox') || e.target.closest('.topic-select'))) {
+            return;
+          }
+          const card = e.target.closest('.topic-item');
+          if (!card) return;
+          const id = card.dataset.topicId || card.dataset.id || card.getAttribute('data-id');
+
+          if (window.TopicsManager && typeof TopicsManager.selectTopic === 'function') {
+            TopicsManager.selectTopic(id);
+          }
+        });
+      }
+    function adaptTopicForVisits(topic) {
+      if (!topic) return null;
+      const adapted = {
+        id: topic.id || topic.topicId,
+        name: topic.title || topic.name || topic.topicTitle || (`话题 ${topic.id}`),
+        news: (topic.news || []).map(n => ({
+          id: n.id || n.newsId,
+          title: n.title || n.newsTitle || '',
+          views: n.views || n.stats?.views || 0,
+          likes: n.stats?.likes || n.likes || 0,
+          comments: n.stats?.comments || n.comments || 0
+        }))
+      };
+      return adapted;
+    }
+  </script>
+</body>
+</html>
